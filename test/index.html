@@ -99,11 +99,12 @@
         </div>
     </div>
 
-    <script src="https://webrtc.github.io/adapter/adapter-latest.js"></script>
+    <!-- <script src="https://webrtc.github.io/adapter/adapter-latest.js"></script> -->
     <script>
         // 是否为前置摄像头
         var face = false;
-
+		var change = true;
+		
         // 打开摄像机
         var start = function () {
             navigator.mediaDevices.getUserMedia({ video: { facingMode: { exact: (face ? 'user' : 'environment') }, width: { ideal: 1280 } } })
@@ -222,28 +223,24 @@
                 document.mozCancelFullScreen();
             }
         }
-
+		$quanping.classList.add('hide');
+		$tuichuquanping.classList.add('hide');
         window.onload = function () {
             start();
 
-            $changeFacing.onclick = function () {
-                changeFacing();
-            }
-
             // 如果浏览器支持全屏
             if (document.fullscreenEnabled) {
-                $quanping.onclick = function () {
-                    console.log('sadasd');
-                    requestFullscreen(document.querySelector('.container'));
-                    $quanping.classList.add('hide');
-                    $tuichuquanping.classList.remove('hide');
-                }
-
-                $tuichuquanping.onclick = function () {
-                    exitFullscreen();
-                    $quanping.classList.remove('hide');
-                    $tuichuquanping.classList.add('hide');
-                }
+                $changeFacing.onclick = function () {
+					if(change)
+					{
+						requestFullscreen(document.querySelector('.container'));
+					}
+					else
+					{
+					    exitFullscreen();
+					}
+					change = !change;
+				}
             } else {
                 document.querySelector('.fullscreen').classList.add('hide');
             }
