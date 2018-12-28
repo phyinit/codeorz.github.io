@@ -109,6 +109,7 @@
             navigator.mediaDevices.getUserMedia({ video: { facingMode: { exact: (face ? 'user' : 'environment') }, width: { ideal: 1280 } } })
                 .then(function (stream) {
                     $video.srcObject = stream
+					$video.classList.remove('flip');
                 })
                 .catch(function (e) {
                     console.error('发生错误', e);
