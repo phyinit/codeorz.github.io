@@ -1,30 +1,265 @@
-<!DOCTYPE html><html><head><meta http-equiv="content-type" content="text/html; charset=utf-8"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"><meta content="yes" name="apple-mobile-web-app-capable"><meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"><meta content="telephone=no" name="format-detection"><meta name="description"><title>codeOrz</title><link rel="stylesheet" type="text/css" href="/css/normalize.css"><link rel="stylesheet" type="text/css" href="/css/highlight.css"><link rel="stylesheet" type="text/css" href="/css/font.css"><link rel="stylesheet" type="text/css" href="/css/noise.css"><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/font-awesome/4.5.0/css/font-awesome.min.css"><link rel="Shortcut Icon" type="image/x-icon" href="/favicon.ico"></head><body><header class="wrapper header"><div class="container blog-title"><a class="title" id="logo" href="/.">codeOrz</a><span class="subtitle"></span><label id="toggle-menu" for="menu" onclick><i class="fa fa-bars"></i></label></div><input id="menu" type="checkbox"><div class="container nav-items"><a class="sidebar-nav-item active" href="/">Home</a><a class="sidebar-nav-item" href="/archives">Archives</a></div></header><article class="wrapper"><div class="container entries" id="index-main"><div class="post-entry"><div class="post-desc"><div class="post-title"><a href="/2018/十六进制与内存大小对应关系/">十六进制与内存大小对应关系</a></div><div class="post-content"><table>
-<thead>
-<tr>
-<th>十六进制值</th>
-<th>十进制</th>
-<th>内存大小</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>0x400</td>
-<td>1024</td>
-<td>1k</td>
-</tr>
-<tr>
-<td>0x1000</td>
-<td>4096</td>
-<td>4k</td>
-</tr>
-<tr>
-<td>0x10000</td>
-<td>65536</td>
-<td>64k</td>
-</tr>
-</tbody>
-</table>
-<h3 id="小例子"><a href="#小例子" class="headerlink" title="小例子"></a>小例子</h3><p>有段程序占据了0x80000000 - 0xC800AFFF的内存空间，这段内存的大小是多少？</p></div><div class="post-meta"><div class="post-time">2018-10-19</div></div></div></div><div class="post-entry"><div class="post-desc"><div class="post-title"><a href="/2018/2/">一句话是不是太少了</a></div><div class="post-content"><p>RT</p></div><div class="post-meta"><div class="post-time">2018-10-07</div></div></div></div><div class="post-entry"><div class="post-desc"><div class="post-title"><a href="/2018/first/">whatistime</a></div><div class="post-content"><p>2018年10月7日</p></div><div class="post-meta"><div class="post-time">2018-10-07</div></div></div></div><div class="post-entry"><div class="post-desc"><div class="post-title"><a href="/2016/3/">what is the time?</a></div><div class="post-content"><p>2018年10月7日22点21分</p></div><div class="post-meta"><div class="post-time">2016-12-07</div></div></div></div></div></article><div class="wrapper page-navigator-wrapper"></div><footer class="footer wrapper"><div class="social"><a href="/atom.xml" target="_blank"><i class="fa fa-rss"></i></a></div><div class="footer-content">© 2018 <a href="/" rel="nofollow">codeOrz</a>. Powered by <a rel="nofollow" target="_blank" href="https://hexo.io">Hexo</a>. Theme <a target="_blank" href="https://github.com/lotabout/hexo-theme-noise">noise</a>.</div></footer><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.css"><script src="//cdn.bootcss.com/jquery/2.0.3/jquery.min.js"></script><script src="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.pack.js"></script><script>$(document).ready(function() {
-  $(".fancybox").fancybox();
-});
-</script></body></html>
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>一个高仿原生安卓的h5照相机</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        .full {
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        .hide {
+            display: none !important;
+        }
+
+        .container {
+            position: fixed;
+            background: #333;
+        }
+
+        .container .sence video {
+            position: absolute;
+            object-fit: cover;
+        }
+
+        .container .sence video.flip {
+            transform: rotateY(180deg);
+        }
+
+        .container .sence canvas {
+            position: absolute;
+        }
+		
+		.container .operation .change-facing {
+            position: absolute;
+            top: 10px;
+            left: 3%;
+
+        }
+
+        .container .operation .change-facing img {
+            height: 100%;
+            width: 100%;
+        }
+		
+        .container .operation .save-photo {
+            position: absolute;
+            top: 10px;
+            left: 0;
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            padding: 0 10px;
+        }
+
+        .container .operation .save-photo img {
+            width: 30px;
+            height: 30px;
+        }
+
+        .container .operation .fullscreen {
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+        }
+
+        .container .operation .fullscreen img {
+            width: 30px;
+            height: 30px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container full">
+        <div class="sence">
+            <video class="full flip" id="$video" autoplay></video>
+            <canvas class="full hide" id="$canvas"></canvas>
+        </div>
+        <div class="operation full">
+            <div class="change-facing">
+                <img id="$changeFacing" src="./img/8048tv.png">
+            </div>
+            <div class="save-photo hide">
+                <img id="$dacha" src="./img/dacha.svg">
+                <img id="$dagou" src="./img/dagou.svg">
+            </div>
+            <div class="fullscreen">
+                <img id="$quanping" src="./img/quanping.svg">
+                <img id="$tuichuquanping" class="hide" src="./img/tuichuquanping.svg">
+            </div>
+        </div>
+    </div>
+
+    <script src="https://webrtc.github.io/adapter/adapter-latest.js"></script>
+    <script>
+        // 是否为前置摄像头
+        //var face = false;
+		var face = true;
+
+        // 打开摄像机
+        var start = function () {
+            navigator.mediaDevices.getUserMedia({ video: { facingMode: { exact: (face ? 'user' : 'environment') }, width: { ideal: 1280 } } })
+                .then(function (stream) {
+                    $video.srcObject = stream
+                })
+                .catch(function (e) {
+                    console.error('发生错误', e);
+                    // 使用上面的方式错误后，尝试使用startById
+                    startById();
+                });
+        }
+
+        // 关闭摄像机
+        var stop = function () { $video.srcObject && $video.srcObject.getTracks().map(function (t) { t.stop() }); }
+
+        // 通过设备id打开摄像机，解决在谷歌手机浏览器上无法切换前后置摄像头
+        function startById() {
+            var facingMode = face ? 'front' : 'back';
+            var videoId = null;
+            navigator.mediaDevices.enumerateDevices()
+                .then(function (devices) {
+                    devices.forEach(function (device) {
+                        console.info(device, device.kind + ": " + device.label +
+                            " id = " + device.deviceId);    
+                        if (device.kind === 'videoinput' && device.label.indexOf(facingMode) !== -1) {
+                            videoId = device.deviceId;
+                        }
+                    });
+
+                    if (videoId) {
+                        console.log('找到了设备id');
+                        navigator.mediaDevices.getUserMedia({ video: {sourceId: videoId}, width: { ideal: 1280 }})
+                            .then(function (stream) { ($video.srcObject = stream) })
+                            .catch(function (e) { console.error('发生错误', e) });
+                    } else {
+                        console.log('没找到');
+                    }
+                })
+                .catch(function (err) {
+                    console.error(err.name + ": " + err.message);
+                });
+        }
+
+        // 自拍时需要翻转图片
+        var flipCanvas = function (sX, sY, videoTrueWidth, videoTrueHeight) {
+            // 翻转拍照
+            var cxt = $canvas.getContext('2d');
+            cxt.translate($canvas.width, 0);
+            cxt.scale(-1, 1);
+            // 绘制视频
+            cxt.drawImage($video, sX, sY, videoTrueWidth, videoTrueHeight, 0, 0, $canvas.width, $canvas.height);
+            //翻转回来
+            cxt.translate($canvas.width, 0);
+            cxt.scale(-1, 1);
+        }
+
+        /* 标准化 fullscreenEnabled 属性 （只读） */
+        document.fullscreenEnabled = (function () {
+            var doc = document.documentElement;
+            return ('requestFullscreen' in doc) ||
+                ('webkitRequestFullScreen' in doc) ||
+                // 对Firefox除了能力判断，还加上了属性判断
+                ('mozRequestFullScreen' in doc && document.mozFullScreenEnabled) ||
+                false;
+        })();
+
+        /**
+        * 标准化 fullscreenElement 属性 （只读）
+        * 以同名方法替代
+        */
+        function fullscreenElement() {
+            return document.fullscreenElement ||
+                document.webkitCurrentFullScreenElement ||
+                document.mozFullScreenElement ||
+                null;
+        }
+
+        /**
+        * 标准化 requestFullscreen 方法
+        * @param {DOM} elem 要全屏显示的元素(webkit下只要是DOM即可，Firefox下必须是文档中的DOM元素)
+        */
+        function requestFullscreen(elem) {
+            if (elem.requestFullscreen) {
+                elem.requestFullscreen();
+            }
+            else if (elem.webkitRequestFullScreen) {
+                // 对 Chrome 特殊处理，
+                // 参数 Element.ALLOW_KEYBOARD_INPUT 使全屏状态中可以键盘输入。
+                if (window.navigator.userAgent.toUpperCase().indexOf('CHROME') >= 0) {
+                    elem.webkitRequestFullScreen(Element.ALLOW_KEYBOARD_INPUT);
+                }
+                // Safari 浏览器中，如果方法内有参数，则 Fullscreen 功能不可用。
+                else {
+                    elem.webkitRequestFullScreen();
+                }
+            }
+            else if (elem.mozRequestFullScreen) {
+                elem.mozRequestFullScreen();
+            }
+        }
+
+
+        /**
+        * 标准化 exitFullscreen 方法
+        */
+        function exitFullscreen() {
+            if (document.exitFullscreen) {
+                document.exitFullscreen();
+            }
+            else if (document.webkitCancelFullScreen) {
+                document.webkitCancelFullScreen();
+            }
+            else if (document.mozCancelFullScreen) {
+                document.mozCancelFullScreen();
+            }
+        }
+
+        window.onload = function () {
+            start();
+
+            $dagou.onclick = function () {
+                document.querySelector('.save-photo').classList.add('hide');
+                $changeFacing.classList.remove('hide');
+                $canvas.classList.add('hide');
+            }
+
+            $dacha.onclick = function () {
+                document.querySelector('.save-photo').classList.add('hide');
+                $changeFacing.classList.remove('hide');
+                $canvas.classList.add('hide');
+            }
+
+            // 如果浏览器支持全屏
+            if (document.fullscreenEnabled) {
+                $quanping.onclick = function () {
+                    console.log('sadasd');
+                    requestFullscreen(document.querySelector('.container'));
+                    $quanping.classList.add('hide');
+                    $tuichuquanping.classList.remove('hide');
+                }
+
+                $tuichuquanping.onclick = function () {
+                    exitFullscreen();
+                    $quanping.classList.remove('hide');
+                    $tuichuquanping.classList.add('hide');
+                }
+            } else {
+                document.querySelector('.fullscreen').classList.add('hide');
+            }
+
+        };
+    </script>
+</body>
+
+</html>
